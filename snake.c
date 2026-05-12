@@ -39,11 +39,24 @@ int main()
         return 1;
     }
     SDL_Surface* surface=SDL_GetWindowSurface(window);
+    SDL_Event event;
+    int game=1;
+    while(game)
+    {
+        while(SDL_PollEvent(&event))
+        {
+            if(event.type == SDL_EVENT_QUIT)
+        {
+            game=0;
+        }
+        }
     SDL_Rect rect={200,200,200,200};
     SDL_FillSurfaceRect(surface, &rect, 0xFFFFFFFF);
     draw_grid(surface);
+    SDL_FillSurfaceRect(surface, &rect, 0xFFFFFFFF);
     SDL_UpdateWindowSurface(window);
-    SDL_Delay(5000);
+    SDL_Delay(16);
+    }
     SDL_DestroyWindow(window);
     SDL_Quit();
 
