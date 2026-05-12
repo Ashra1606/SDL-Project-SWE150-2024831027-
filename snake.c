@@ -8,6 +8,7 @@
 #define col width/cell_size
 #define GRID_COLOR 0x444444FF
 #define line_width 2
+#define color_White 0xfffffff
 
 int draw_grid(SDL_Surface *surface)
 {
@@ -22,6 +23,11 @@ int draw_grid(SDL_Surface *surface)
         SDL_FillSurfaceRect(surface,&line_x,GRID_COLOR); 
     }
     
+}
+void fill_cell(SDL_Surface* surface, int x, int y,Uint32 color)
+{
+    SDL_Rect rect={ x*cell_size,y*cell_size,cell_size,cell_size};
+    SDL_FillSurfaceRect(surface, &rect,color);
 }
 int main()
 {
@@ -50,10 +56,10 @@ int main()
             game=0;
         }
         }
-    SDL_Rect rect={200,200,200,200};
-    SDL_FillSurfaceRect(surface, &rect, 0xFFFFFFFF);
+    
+    SDL_FillSurfaceRect(surface, NULL, 0x000000FF);
     draw_grid(surface);
-    SDL_FillSurfaceRect(surface, &rect, 0xFFFFFFFF);
+    fill_cell(surface,9,6,color_White);
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
     }
