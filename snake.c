@@ -9,7 +9,7 @@
 #define GRID_COLOR 0x444444FF
 #define line_width 2
 #define color_White 0xfffffff
-
+#define snake(x,y) 
 int draw_grid(SDL_Surface *surface)
 {
     for(int i=0;i<row;i++)
@@ -47,6 +47,8 @@ int main()
     SDL_Surface* surface=SDL_GetWindowSurface(window);
     SDL_Event event;
     int game=1;
+    int snake_x=5;
+    int snake_y=5;
     while(game)
     {
         while(SDL_PollEvent(&event))
@@ -55,11 +57,30 @@ int main()
         {
             game=0;
         }
+        if(event.type== SDL_EVENT_KEY_DOWN)
+        {
+            if(event.key.key == SDLK_RIGHT)
+            {
+                snake_x++;
+            }
+             if(event.key.key == SDLK_LEFT)
+            {
+                snake_x--;
+            }
+            if(event.key.key == SDLK_UP)
+            {
+                snake_y--;
+            }
+             if(event.key.key == SDLK_DOWN)
+            {
+                snake_y++;
+            }
+        }
         }
     
     SDL_FillSurfaceRect(surface, NULL, 0x000000FF);
     draw_grid(surface);
-    fill_cell(surface,9,6,color_White);
+    fill_cell(surface,snake_x,snake_y,color_White);
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
     }
