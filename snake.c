@@ -1,16 +1,20 @@
 #include<stdio.h>
 #include <SDL3/SDL.h>
-
+#include<stdlib.h>
+#include<time.h>
 #define width 900
 #define height 600
 #define cell_size 15
 #define row height/cell_size
 #define col width/cell_size
-#define GRID_COLOR 0x444444FF
+#define GRID_COLOR 0xFF444444
 #define line_width 2
-#define color_White 0xfffffff
+#define color_White 0xFFFFFFFF
 #define snake(x,y) 
-int draw_grid(SDL_Surface *surface)
+#define food 0xFFFF0000
+
+
+void draw_grid(SDL_Surface *surface)
 {
     for(int i=0;i<row;i++)
     {
@@ -49,6 +53,9 @@ int main()
     int game=1;
     int snake_x=5;
     int snake_y=5;
+    srand(time(NULL));
+    int food_x=rand() % col;
+    int food_y=rand() % row;
     while(game)
     {
         while(SDL_PollEvent(&event))
@@ -77,9 +84,15 @@ int main()
             }
         }
         }
+        if(snake_x == food_x && snake_y==food_y)
+        {
+            food_x=rand()%col;
+            food_y=rand()%row;
+        }
     
-    SDL_FillSurfaceRect(surface, NULL, 0x000000FF);
+    SDL_FillSurfaceRect(surface, NULL, 0xFF000000);
     draw_grid(surface);
+    fill_cell(surface,food_x,food_y,food);
     fill_cell(surface,snake_x,snake_y,color_White);
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
