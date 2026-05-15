@@ -13,7 +13,10 @@
 #define snake(x,y) 
 #define food 0xFFFF0000
 
-
+struct snakeElement{
+    int x,y;
+    struct snakeElement *next;
+};
 void draw_grid(SDL_Surface *surface)
 {
     for(int i=0;i<row;i++)
@@ -33,6 +36,42 @@ void fill_cell(SDL_Surface* surface, int x, int y,Uint32 color)
     SDL_Rect rect={ x*cell_size,y*cell_size,cell_size,cell_size};
     SDL_FillSurfaceRect(surface, &rect,color);
 }
+void draw_snake(SDL_Surface* surface, struct snakeElement* element)
+{
+    while(element != NULL)
+    {
+        fill_cell(surface, element->x, element->y, color_White);
+        element = element->next;
+    }
+}
+void add_segment(struct  snakeElement* head)
+{
+    struct snakeElement* current=head;
+    while(current->next!=NULL)
+    {
+        current=current->next;
+    }
+    struct snakeElement* new_segment=malloc(sizeof(struct snakeElement));
+    new_segment->x=current->x;
+    new_segment->y=current->y;
+    new_segment->next=NULL;
+    current->next=new_segment;
+}
+void move_tail(struct snakeElement* head,int prev_x,int prev_y)
+{
+    struct  snakeElement *current=head->next;
+    while(current!=NULL)
+    {
+        int temp_x=current->x;
+        int temp_y=current->y;
+        current->x=prev_x;
+        current->y=prev_y;
+        prev_x=temp_x;
+        prev_y=temp_y;
+        current=current->next;
+    }
+            
+}
 int main()
 {
     printf("Hello snake!\n");
@@ -50,14 +89,16 @@ int main()
     }
     SDL_Surface* surface=SDL_GetWindowSurface(window);
     SDL_Event event;
+    struct snakeElement snake={5,5,NULL};
     int game=1;
-    int snake_x=5;
-    int snake_y=5;
     srand(time(NULL));
     int food_x=rand() % col;
     int food_y=rand() % row;
     while(game)
     {
+        int old_x=snake.x;
+        int old_y=snake.y;
+        int moved=0;
         while(SDL_PollEvent(&event))
         {
             if(event.type == SDL_EVENT_QUIT)
@@ -68,32 +109,41 @@ int main()
         {
             if(event.key.key == SDLK_RIGHT)
             {
-                snake_x++;
+                snake.x++;
+                moved=1;
             }
              if(event.key.key == SDLK_LEFT)
             {
-                snake_x--;
+                snake.x--;
+                moved=1;
             }
             if(event.key.key == SDLK_UP)
             {
-                snake_y--;
+                snake.y--;
+                moved=1;
             }
              if(event.key.key == SDLK_DOWN)
             {
-                snake_y++;
+                snake.y++;
+                moved=1;
             }
         }
         }
-        if(snake_x == food_x && snake_y==food_y)
+if(moved)
+{
+    move_tail(&snake,old_x,old_y);
+}
+        if(snake.x == food_x && snake.y==food_y)
         {
+            add_segment(&snake);
             food_x=rand()%col;
             food_y=rand()%row;
         }
-    
     SDL_FillSurfaceRect(surface, NULL, 0xFF000000);
     draw_grid(surface);
     fill_cell(surface,food_x,food_y,food);
-    fill_cell(surface,snake_x,snake_y,color_White);
+    fill_cell(surface,snake.x,snake.y,color_White);
+    draw_snake(surface,&snake);
     SDL_UpdateWindowSurface(window);
     SDL_Delay(16);
     }
