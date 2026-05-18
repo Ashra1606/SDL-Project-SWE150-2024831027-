@@ -94,11 +94,14 @@ int main()
     srand(time(NULL));
     int food_x=rand() % col;
     int food_y=rand() % row;
+    
+    int vx=1;
+    int vy=0;
+
+    Uint64 last_move_time = SDL_GetTicks();
+    Uint64 move_interval =150;
     while(game)
     {
-        int old_x=snake.x;
-        int old_y=snake.y;
-        int moved=0;
         while(SDL_PollEvent(&event))
         {
             if(event.type == SDL_EVENT_QUIT)
@@ -107,32 +110,39 @@ int main()
         }
         if(event.type== SDL_EVENT_KEY_DOWN)
         {
-            if(event.key.key == SDLK_RIGHT)
+            if(event.key.key == SDLK_RIGHT && vx==0)
             {
-                snake.x++;
-                moved=1;
+                vx=1;
+                vy=0;
             }
-             if(event.key.key == SDLK_LEFT)
+             if(event.key.key == SDLK_LEFT && vx==0)
             {
-                snake.x--;
-                moved=1;
+                vx=-1;
+                vy=0;
             }
-            if(event.key.key == SDLK_UP)
+            if(event.key.key == SDLK_UP && vy==0)
             {
-                snake.y--;
-                moved=1;
+                vx=0;
+                vy=-1;
             }
-             if(event.key.key == SDLK_DOWN)
+             if(event.key.key == SDLK_DOWN && vy==0)
             {
-                snake.y++;
-                moved=1;
+                vx=0;
+                vy=1;
             }
         }
         }
-if(moved)
-{
-    move_tail(&snake,old_x,old_y);
-}
+        Uint64 current_time = SDL_GetTicks();
+        if(current_time-last_move_time >= move_interval)
+        {
+        int old_x=snake.x;
+        int old_y=snake.y;
+
+        snake.x +=vx;
+        snake.y +=vy;
+        move_tail(&snake, old_x,old_y);
+        last_move_time=current_time;
+        }
         if(snake.x == food_x && snake.y==food_y)
         {
             add_segment(&snake);
