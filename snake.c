@@ -72,6 +72,19 @@ void move_tail(struct snakeElement* head,int prev_x,int prev_y)
     }
             
 }
+int check_self_collision(struct snakeElement* head)
+{
+    struct snakeElement* current=head->next;
+    while(current!=NULL)
+    {
+        if(head->x == current->x && head->y == current->y)
+        {
+            return 1;
+        }
+        current= current->next;
+    }
+    return 0;
+}
 int main()
 {
     printf("Hello snake!\n");
@@ -141,6 +154,16 @@ int main()
         snake.x +=vx;
         snake.y +=vy;
         move_tail(&snake, old_x,old_y);
+        if(snake.x < 0 || snake.x >= col || snake.y < 0 || snake.y >= row )
+        {
+            printf("Game Over: Boundary Collision Detected!\n");
+            game=0;
+        }
+        if(check_self_collision(&snake))
+        {
+            printf("Game Over: Self Collision Detected!\n");
+            game=0;
+        }
         last_move_time=current_time;
         }
         if(snake.x == food_x && snake.y==food_y)
