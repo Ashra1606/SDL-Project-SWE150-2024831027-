@@ -123,6 +123,8 @@ int main(int argc, char* argv[]) {
     struct snakeElement snake = {5, 5, NULL};
     int game = 1;
     
+    int score = 0;
+
     srand(time(NULL));
     int food_x = rand() % col;
     int food_y = rand() % row;
@@ -141,6 +143,8 @@ int main(int argc, char* argv[]) {
     Uint64 last_move_time = SDL_GetTicks();
     Uint64 move_interval = 150;// The game ticks every 150 milliseconds
     
+    printf("Current Score: %d\n", score);
+
     while(game) {
         // Handle input events
         while(SDL_PollEvent(&event)) {
@@ -189,10 +193,12 @@ int main(int argc, char* argv[]) {
 
             if(snake.x < 0 || snake.x >= col || snake.y < 0 || snake.y >= row ) {
                 printf("Game Over: Boundary Collision Detected!\n");
+                printf("Final Score: %d\n", score);
                 game = 0;
             }
             if(check_self_collision(&snake)) {
                 printf("Game Over: Self Collision Detected!\n");
+                printf("Final Score: %d\n", score);
                 game = 0;
             }
             last_move_time = current_time;
@@ -202,6 +208,8 @@ int main(int argc, char* argv[]) {
 
         if(snake.x == food_x && snake.y == food_y) {
             add_segment(&snake);
+            score += 10;
+            printf("Current Score: %d\n", score);
             food_x = rand() % col;
             food_y = rand() % row;
 
@@ -218,6 +226,8 @@ int main(int argc, char* argv[]) {
             if(snake.x == bonus_x && snake.y == bonus_y) {
                 add_segment(&snake); // Grow segment 1
                 add_segment(&snake); // Grow segment 2 (Double growth penalty/reward for bonus target!)
+                score += 50;
+                printf("BONUS! Current Score: %d\n", score);
                 bonus_active = 0;    // Turn off visibility flag until next spawn trigger
             } 
             // Check if the current elapsed runtime minus the spawn moment exceeds 5000ms
@@ -231,6 +241,11 @@ int main(int argc, char* argv[]) {
         
         draw_grid(renderer);
         fill_cell(renderer, food_x, food_y, 255, 0, 0);
+
+        // Conditional drawing for bonus food
+        if(bonus_active) {
+            fill_cell(renderer, bonus_x, bonus_y, 0, 255, 0);
+        }
         draw_snake(renderer, &snake);
         
         SDL_RenderPresent(renderer);
